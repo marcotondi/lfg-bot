@@ -1,5 +1,5 @@
-from telegram import Message
-from telegram.ext import CallbackContext
+from telegram import Message, Update
+from telegram.ext import CallbackContext, ConversationHandler
 from telegram.error import TelegramError
 
 
@@ -30,3 +30,9 @@ async def safe_edit_message(query, new_text: str, parse_mode: str = "HTML"):
         # Logga e notifica in caso di errore API
         print(f"Errore durante safe_edit_message: {e}")
         await query.answer("Errore nella modifica del messaggio", show_alert=True)
+
+
+async def cancel(update: Update, context: CallbackContext) -> int:
+    """Cancels and ends the conversation."""
+    await update.message.reply_text("Operation cancelled.")
+    return ConversationHandler.END

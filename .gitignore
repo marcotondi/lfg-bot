@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,venv,windows,linux,visualstudiocode,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,venv,windows,linux,visualstudiocode,git
 
+logs/
+logs/*
 *.db
 
 ### Git ###

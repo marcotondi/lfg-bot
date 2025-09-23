@@ -80,3 +80,15 @@ def get_tables_by_master_id(master_id):
     tables = cursor.fetchall()
     conn.close()
     return tables
+
+def get_inactive_campaigns_by_master(master_id):
+    """Retrieves all inactive campaigns for a given master."""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "SELECT * FROM tables WHERE master_id = ? AND type = 'campaign' AND active = 0",
+        (master_id,),
+    )
+    tables = cursor.fetchall()
+    conn.close()
+    return tables

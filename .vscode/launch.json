@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "lfg bot",
+            "type": "python",
+            "request": "launch",
+            "module": "src.main",  // Equivale a -m src.main
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "PYTHONPATH": "."
+            }
+        }
+    ]
+}
