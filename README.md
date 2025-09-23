@@ -94,9 +94,13 @@ lfg-bot/
 │   ├───database.py         # Gestione del database
 │   ├───main.py             # Punto di ingresso principale del bot
 │   ├───handlers/           # Moduli per la gestione dei comandi e degli eventi
-│   │   ├───admin.py
-│   │   ├───common.py
-│   │   └───master.py
+│   │   ├───admin/
+│   │   ├─── .py            # Moduli per la gestione dei comandi per gli admin 
+│   │   ├───common/
+│   │   ├─── .py            # Moduli per la gestione dei comandi per gli utenti
+│   │   ├───master/
+│   │   ├─── .py            # Moduli per la gestione dei comandi per i master
+│   │   │
 │   ├───models/             # Definizioni dei modelli del database
 │   │   ├───registration.py
 │   │   ├───table.py
