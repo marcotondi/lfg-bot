@@ -25,7 +25,7 @@ from src.handlers.admin import (
 )
 from src.handlers.master import master_edit, add_game, master_my_tables
 from src.config import TELEGRAM_TOKEN
-from src.database import init_db
+from src.database import validate_db
 
 # --- Logging Configuration ---
 LOG_DIR = "logs"
@@ -61,8 +61,11 @@ logger = logging.getLogger(__name__)
 
 def main() -> None:
     """Start the telegram bot."""
-    # Initialize the database
-    init_db()
+    # Validazione database
+    valid, missing = validate_db()
+    if not valid:
+        logger.error(f"Database non valido! Tabelle mancanti: {missing}")
+        exit(1)
 
     # Create the Application and pass it your bot's token.
     application = Application.builder().token(TELEGRAM_TOKEN).build()

@@ -87,12 +87,13 @@ async def tables(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         # Get current players count
         current_players = registration_model.get_registrations_count(table["id"])
 
+        # FIXME: le informazioni potrebbero non esserci tutte, gestire i None
         # Get master info
         master = user_model.get_user(table["master_id"])
         master_name = None
         if master:
             master_name = f"{master['first_name']} {master['last_name']}"
-            if master.get("username"):
+            if master["username"]:
                 master_name += f" (@{master['username']})"
 
         # Create buttons

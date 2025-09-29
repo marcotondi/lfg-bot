@@ -5,6 +5,7 @@ Hanldes SQLite database connection and initialization.
 """
 
 import sqlite3
+import os
 from src.config import DB_FILE
 
 def get_db_connection():
@@ -13,74 +14,21 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-def init_db():
-    """Initializes the database with the required schema."""
+def validate_db():
+    """Checks if the database schema is valid (all required tables exist)."""
     conn = get_db_connection()
     cursor = conn.cursor()
+    required_tables = {"users", "tables", "registrations"}
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+    tables = {row["name"] for row in cursor.fetchall()}
+    conn.close()
+    missing = required_tables - tables
+    return len(missing) == 0, missing
 
-    # Create users table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        telegram_id INTEGER UNIQUE NOT NULL,
-        username TEXT,
-        first_name TEXT,
-        last_name TEXT,
-        mute BOOLEAN DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    );
-    """)
-
-    # Add is_master and is_admin columns if they don't exist
-    cursor.execute("PRAGMA table_info(users)")
-    columns = [column[1] for column in cursor.fetchall()]
-    if "is_master" not in columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN is_master BOOLEAN DEFAULT 0")
-    if "is_admin" not in columns:
-        cursor.execute("ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT 0")
-
-    # Create tables table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS tables (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        master_id INTEGER NOT NULL,
-        type TEXT CHECK(type IN ('one_shot', 'campaign')) NOT NULL,
-        game TEXT NOT NULL,
-        name TEXT NOT NULL,
-        max_players INTEGER NOT NULL,
-        description TEXT,
-        image TEXT,
-        num_sessions INTEGER,
-        active BOOLEAN DEFAULT 1,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (master_id) REFERENCES users(id)
-    );
-    """)
-
-    # Create registrations table
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS registrations (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        table_id INTEGER NOT NULL,
-        user_id INTEGER NOT NULL,
-        is_active BOOLEAN NOT NULL DEFAULT TRUE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (table_id) REFERENCES tables(id),
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        UNIQUE(table_id, user_id)
-    );
-    """)
-
-    # Create trigger for registrations updated_at
-    cursor.execute("""
-    CREATE TRIGGER IF NOT EXISTS update_registrations_updated_at
-    AFTER UPDATE ON registrations
-    FOR EACH ROW
-    BEGIN
-        UPDATE registrations SET updated_at = CURRENT_TIMESTAMP WHERE id = OLD.id;
-    END;
-    """)
-
-    conn.commit()
+def bootstrap_db_from_migration():
+    """Initializza il database usando lo script di migrazione principale."""
+    migration_path = os.path.join(os.path.dirname(__file__), "..", "db", "migrations", "20250926122852_initial_schema.sql")
+    conn = get_db_connection()
+    with open(migration_path, "r") as f:
+        conn.executescript(f.read())
     conn.close()
