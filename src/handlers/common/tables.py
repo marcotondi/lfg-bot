@@ -92,7 +92,7 @@ async def tables(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         master = user_model.get_user(table["master_id"])
         master_name = None
         if master:
-            master_name = f"{master['first_name']} {master['last_name']}"
+            master_name = f"{master['first_name'] or ''} {master['last_name'] or ''}"
             if master["username"]:
                 master_name += f" (@{master['username']})"
 
@@ -141,7 +141,7 @@ async def tables(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
                 )
         except Exception as e:
             logger.error(f"Si è verificato un errore: {e}", exc_info=True)
-    # exc_info=True aggiunge automaticamente il traceback completo
+            # exc_info=True aggiunge automaticamente il traceback completo
             # Fallback to simple format if advanced formatting fails
             simple_message = (
                 f"<b>ECCEZIONE</b>\n"
@@ -245,8 +245,8 @@ async def show_players_callback(
 
     # Master info
     if master:
-        message += f"🎭 <b>Master:</b> {master['first_name']} {master['last_name']}"
-        if master.get("username"):
+        message += f"🎭 <b>Master:</b> {master['first_name'] or ''} {master['last_name'] or ''}"
+        if master["username"]:
             message += f" (@{master['username']})"
         message += "\n\n"
     else:
@@ -264,9 +264,7 @@ async def show_players_callback(
                 if "username" in player.keys()
                 else "no username"
             )
-            message += (
-                f"   {i}. {player['first_name']} {player['last_name']} ({username})\n"
-            )
+            message += f"   {i}. {player['first_name'] or ''} {player['last_name'] or ''} ({username})\n"
 
     # Available slots
     remaining_slots = table["max_players"] - len(registrations)
