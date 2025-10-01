@@ -106,9 +106,9 @@ async def num_sessions(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 async def save_table(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Saves the table to the database."""
-    user = user_model.get_user(update.effective_user.id)
+    user = user_model.get_telegram_user(update.effective_user.id)
     table_model.create_table(
-        master_id=user["telegram_id"],
+        master_id=user["id"],
         type=context.user_data["type"],
         game=context.user_data["game"],
         name=context.user_data["name"],
@@ -123,8 +123,8 @@ async def save_table(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
 @master_required
 async def pause_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Shows a list of active campaigns to pause."""
-    user = user_model.get_user(update.effective_user.id)
-    campaigns = table_model.get_active_campaigns_by_master(user["telegram_id"])
+    user = user_model.get_telegram_user(update.effective_user.id)
+    campaigns = table_model.get_active_campaigns_by_master(user["id"])
 
     if not campaigns:
         await update.message.reply_text("You have no active campaigns to pause.")
@@ -162,8 +162,8 @@ async def pause_campaign_callback(
 @master_required
 async def continue_campaign(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Shows a list of inactive campaigns to continue."""
-    user = user_model.get_user(update.effective_user.id)
-    campaigns = table_model.get_inactive_campaigns_by_master(user["telegram_id"])
+    user = user_model.get_telegram_user(update.effective_user.id)
+    campaigns = table_model.get_inactive_campaigns_by_master(user["id"])
 
     if not campaigns:
         await update.message.reply_text("You have no inactive campaigns to continue.")

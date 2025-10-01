@@ -36,9 +36,9 @@ async def edit_table_callback(
     table_id = int(query.data.split("_")[2])  # e.g., master_edit_123
 
     # Security Check: Ensure the user is the master of this table
-    user = user_model.get_user(update.effective_user.id)
+    user = user_model.get_telegram_user(update.effective_user.id)
     table = table_model.get_table_by_id(table_id)
-    if not table or table["master_id"] != user["telegram_id"]:
+    if not table or table["master_id"] != user["id"]:
         await query.answer(
             "You are not authorized to edit this table.", show_alert=True
         )
@@ -76,8 +76,8 @@ async def edit_value(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     table = table_model.get_table_by_id(table_id)
 
     # Security check is implicitly handled by the entry point, but good practice
-    user = user_model.get_user(update.effective_user.id)
-    if not table or table["master_id"] != user["telegram_id"]:
+    user = user_model.get_telegram_user(update.effective_user.id)
+    if not table or table["master_id"] != user["id"]:
         await update.message.reply_text("Error: You are not the master of this table.")
         return ConversationHandler.END
 

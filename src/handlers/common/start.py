@@ -24,7 +24,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    if not user_model.get_user(user.id):
+    # user.id id telegram_id
+    if not user_model.get_telegram_user(user.id):
         user_model.create_user(user.id, user.username, user.first_name, user.last_name)
 
     await message.reply_html(

@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 @master_required
 async def my_tables(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Shows a list of the master's tables with edit buttons."""
-    user = user_model.get_user(update.effective_user.id)
-    tables = table_model.get_tables_by_master_id(user["telegram_id"])
+    user = user_model.get_telegram_user(update.effective_user.id)
+    tables = table_model.get_tables_by_master_id(user["id"])
 
     if not tables:
         await update.message.reply_text("You have no tables.")

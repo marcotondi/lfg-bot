@@ -19,7 +19,7 @@ async def mute(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not message:
         return
 
-    user = user_model.get_user(update.effective_user.id)
+    user = user_model.get_telegram_user(update.effective_user.id)
     if user["mute"]:
         user_model.mute_user(update.effective_user.id, False)
         await message.reply_text("🔊 You will now receive notifications.")

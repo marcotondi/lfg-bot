@@ -28,14 +28,14 @@ async def publish_tables(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     for table in active_tables:
         message += f"- {table['game']}\n"
 
-    for user in users:
-        if not user["mute"]:
-            try:
-                await context.bot.send_message(
-                    chat_id=user["telegram_id"], text=message, parse_mode="HTML"
-                )
-            except Exception as e:
-                logger.error(f"Failed to send message to {user['telegram_id']}: {e}")
+    unmuted_users = [user for user in users if not user["mute"]]
+    for user in unmuted_users:
+        try:
+            await context.bot.send_message(
+                chat_id=user["telegram_id"], text=message, parse_mode="HTML"
+            )
+        except Exception as e:
+            logger.error(f"Failed to send message to {user['telegram_id']}: {e}")
 
     await update.message.reply_text("Tables published successfully!")
 
